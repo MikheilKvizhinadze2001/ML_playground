@@ -7,8 +7,7 @@ from ultralytics import YOLO
 import cv2
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
-
-
+import tempfile
 
 
 # message if box is not found
@@ -199,3 +198,38 @@ st.write("""
 st.write("To see how well the model can track objects in a video, you can upload a video below. Upload a video and the model will track objects in it and put bounding boxes around them, bam 😁")
 
 
+# Create a file uploader widget
+uploaded_video = st.file_uploader("Upload a video file")
+
+video = cv2.VideoCapture(uploaded_video.name, cv2.CAP_FFMPEG)
+
+
+# Create a VideoWriter object
+fourcc = cv2.VideoWriter_fourcc(*'XVID')
+output_video = cv2.VideoWriter('output.avi', fourcc, 30.0, (640, 480))
+
+while True:
+    ret, frame = video.read()
+    if not ret:
+        break
+    # Preprocess the frame
+    frame = cv2.resize(frame, (640, 480))
+    # Run the frame through your YOLO model
+    outputs = st.session_state.yolo_model(frame)
+    # Annotate the objects detected
+    for output in outputs:
+        for detection in output:
+            scores = detection.confidence
+            class_id = np.argmax(scores)
+            confidence = scores[class_id]
+            if confidence > 0.5 and class_id == 0:  # Filter out detections with low confidence
+                x, y, w, h = detection.xmin, detection.ymin, detection.xmax, detection.ymax
+                cv2.rectangle(frame, (x, y), (w, h), (0, 255, 0), 2)
+                cv2.putText(frame, f"Object {class_id}", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
+    # Write the annotated frame to the output video
+    output_video.write(frame)
+
+# Release the VideoWriter object
+output_video.release()
+
+st.video('output.avi')
