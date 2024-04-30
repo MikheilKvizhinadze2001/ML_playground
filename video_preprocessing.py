@@ -1,3 +1,4 @@
+import streamlit as st
 import cv2
 import numpy as np
 from ultralytics import YOLO
@@ -8,6 +9,8 @@ from collections import defaultdict
 
 model = YOLO("yolov8n.pt")
 
+
+@st.cache_data
 def annotate_video(video_path):
     track_history = defaultdict(lambda: [])
 

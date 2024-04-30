@@ -10,7 +10,8 @@ from PIL import Image, ImageDraw, ImageFont
 import tempfile
 from video_preprocessing import annotate_video
 import subprocess
-
+import os
+import base64
 
 
 # message if box is not found
@@ -204,9 +205,70 @@ st.write("To see how well the model can track objects in a video, you can upload
 #annotated_video_path = annotate_video("C:/Users/mikhe/Downloads/Cars Moving On Road Stock Footage - Free Download.mp4")
 
 dummy_path = "C:/Users/mikhe/Downloads/Cars Moving On Road Stock Footage - Free Download.mp4"
-track_path = "C:/Users/mikhe/OneDrive/Desktop/ml_app/object_tracking.mp4"
+track_path = "C:/Users/mikhe/OneDrive/Desktop/$R943JYH.mp4"
+
+#video_file = st.file_uploader("Choose a video file", type=["mp4", "avi", "mov"])
 
 
-video_file = open("C:/Users/mikhe/OneDrive/Desktop/object_tracking.mp4", 'rb')
-video_bytes = video_file.read()
-st.video(video_bytes)
+# Read the video file
+with open(track_path, 'rb') as f:
+    video = f.read()
+
+# Encode the video data to Base64
+encoded_video = base64.b64encode(video)
+
+# Assuming you have the Base64-encoded video data (replace with your actual Base64 data)
+base64_encoded_data = encoded_video
+
+# Decode Base64 to binary
+decoded_video = base64.b64decode(base64_encoded_data)
+
+# Save the binary data to an .mp4 file
+output_file_path = "output.mp4"
+with open(output_file_path, "wb") as output_file:
+    output_file.write(decoded_video)
+
+# Display a download button for the saved .mp4 file
+#st.download_button(label="Download video", data=decoded_video, file_name="output.mp4", mime="video/mp4")
+
+
+
+import tempfile
+import base64
+import cv2
+
+# Allow users to upload a video file
+video_file = st.file_uploader("Choose a video file", type=["mp4", "avi", "mov"])
+
+if video_file is not None and st.button("Process Video"):
+    tfile = tempfile.NamedTemporaryFile(delete=False) 
+    tfile.write(video_file.read())
+
+    processed_video_path = annotate_video(tfile.name)
+
+    # Open the processed video file in binary mode and read its content
+    with open(processed_video_path, 'rb') as f:
+        video_content = f.read()
+
+    # Write the content to the temporary file
+    with tempfile.NamedTemporaryFile(suffix=".mp4", delete=False) as temp_file:
+        temp_file.write(video_content)
+        temp_file_path = temp_file.name
+
+    # Read the video file
+    with open(temp_file_path, 'rb') as f:
+        video = f.read()
+
+    # Encode the video data to Base64
+    encoded_video = base64.b64encode(video)
+
+    # Decode Base64 to binary
+    decoded_video = base64.b64decode(encoded_video)
+
+    # Save the binary data to an .mp4 file
+    output_file_path = "output.mp4"
+    with open(output_file_path, "wb") as output_file:
+        output_file.write(decoded_video)
+
+    # Display a download button for the saved .mp4 file
+    st.download_button(label="Download video", data=decoded_video, file_name="output.mp4", mime="video/mp4")
