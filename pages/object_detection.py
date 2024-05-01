@@ -4,15 +4,15 @@ import torch
 import requests
 import time
 from ultralytics import YOLO
-import cv2
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 import tempfile
-from video_preprocessing import annotate_video
+from video_preprocessing import annotate_video, real_time_object_detection
 import subprocess
 import os
+import tempfile
 import base64
-
+import cv2
 
 # message if box is not found
 no_box_found_message = '''
@@ -24,6 +24,12 @@ no_box_found_message = '''
                      It won’t work because it’s only been trained to find cats! 😄
                         '''
 
+def predict_and_detect(chosen_model, img, classes=[], conf=0.5):
+    results = chosen_model.predict(img, conf=conf)
+    if len(results[0].boxes) == 0:
+        st.info(no_box_found_message)
+        st.write("Current Image:")
+        return img
 # Create a loading message
 loading_message = st.empty()
 
@@ -202,44 +208,12 @@ st.write("""
 st.write("To see how well the model can track objects in a video, you can upload a video below. Upload a video and the model will track objects in it and put bounding boxes around them, bam 😁")
 
 
-#annotated_video_path = annotate_video("C:/Users/mikhe/Downloads/Cars Moving On Road Stock Footage - Free Download.mp4")
 
-dummy_path = "C:/Users/mikhe/Downloads/Cars Moving On Road Stock Footage - Free Download.mp4"
-track_path = "C:/Users/mikhe/OneDrive/Desktop/$R943JYH.mp4"
-
-#video_file = st.file_uploader("Choose a video file", type=["mp4", "avi", "mov"])
-
-
-# Read the video file
-with open(track_path, 'rb') as f:
-    video = f.read()
-
-# Encode the video data to Base64
-encoded_video = base64.b64encode(video)
-
-# Assuming you have the Base64-encoded video data (replace with your actual Base64 data)
-base64_encoded_data = encoded_video
-
-# Decode Base64 to binary
-decoded_video = base64.b64decode(base64_encoded_data)
-
-# Save the binary data to an .mp4 file
-output_file_path = "output.mp4"
-with open(output_file_path, "wb") as output_file:
-    output_file.write(decoded_video)
-
-# Display a download button for the saved .mp4 file
-#st.download_button(label="Download video", data=decoded_video, file_name="output.mp4", mime="video/mp4")
-
-
-
-import tempfile
-import base64
-import cv2
-
+# Create a file uploader widget
 # Allow users to upload a video file
 video_file = st.file_uploader("Choose a video file", type=["mp4", "avi", "mov"])
 
+# Check if a video file was uploaded
 if video_file is not None and st.button("Process Video"):
     tfile = tempfile.NamedTemporaryFile(delete=False) 
     tfile.write(video_file.read())
@@ -250,25 +224,41 @@ if video_file is not None and st.button("Process Video"):
     with open(processed_video_path, 'rb') as f:
         video_content = f.read()
 
-    # Write the content to the temporary file
-    with tempfile.NamedTemporaryFile(suffix=".mp4", delete=False) as temp_file:
-        temp_file.write(video_content)
-        temp_file_path = temp_file.name
-
-    # Read the video file
-    with open(temp_file_path, 'rb') as f:
-        video = f.read()
 
     # Encode the video data to Base64
-    encoded_video = base64.b64encode(video)
+    encoded_video = base64.b64encode(video_content)
 
     # Decode Base64 to binary
     decoded_video = base64.b64decode(encoded_video)
 
     # Save the binary data to an .mp4 file
-    output_file_path = "output.mp4"
+    output_file_path = "processed_video.mp4"
     with open(output_file_path, "wb") as output_file:
         output_file.write(decoded_video)
 
     # Display a download button for the saved .mp4 file
-    st.download_button(label="Download video", data=decoded_video, file_name="output.mp4", mime="video/mp4")
+    st.download_button(label="Download video", data=decoded_video, file_name="processed_video.mp4", mime="video/mp4")
+
+
+
+st.write("Below, you can toggle the button to start the real-time detection using your webcam. The model will detect objects in real-time and put bounding boxes around them 📷")
+
+
+
+# Create a button to start the webcam
+on_camera = st.toggle('Activate camera')
+
+
+if on_camera:
+    real_time_detection = st.checkbox("Start Real-Time Detection")
+
+    video_placeholder = st.empty()
+    run_detection = True  
+
+    while run_detection: 
+        with video_placeholder.container():
+            if real_time_detection:
+                real_time_object_detection(st.session_state.yolo_model, video_placeholder)
+            else:
+                video_placeholder.empty()  
+                run_detection = False 
