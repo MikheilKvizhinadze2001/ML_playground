@@ -7,14 +7,17 @@ from ultralytics.utils.plotting import Annotator, colors
 from collections import defaultdict
 import time
 
-model = YOLO("yolov8n.pt")
+
+# This file contains the functions to preprocess videos for object detection and tracking
+# it is not used in the main object_detection.py file, but it is imported in the app.py file
+
 
 # Function to annotate video
 @st.cache_data
-def annotate_video(video_path):
+def annotate_video(_model, video_path):
     track_history = defaultdict(lambda: [])
 
-    names = model.model.names
+    names = _model.model.names
     cap = cv2.VideoCapture(video_path)
     assert cap.isOpened(), "Error reading video file"
     # Get video information
@@ -28,7 +31,7 @@ def annotate_video(video_path):
     while cap.isOpened():
         success, frame = cap.read()
         if success:
-            results = model.track(frame, persist=True, verbose=False)
+            results = _model.track(frame, persist=True, verbose=False)
             boxes = results[0].boxes.xyxy.cpu()
 
             if results[0].boxes.id is not None:
@@ -79,7 +82,7 @@ def real_time_object_detection(_model, _video_placeholder):  # Add video_placeho
         start_time = time.time()
 
         # Perform object detection with your model
-        results = model(frame, augment=False)
+        results = _model(frame, augment=False)
 
         # Draw bounding boxes and labels (modify as needed)
         for result in results:

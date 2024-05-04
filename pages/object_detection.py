@@ -218,7 +218,7 @@ if video_file is not None and st.button("Process Video"):
     tfile = tempfile.NamedTemporaryFile(delete=False) 
     tfile.write(video_file.read())
 
-    processed_video_path = annotate_video(tfile.name)
+    processed_video_path = annotate_video(st.session_state.yolo_model,tfile.name)
 
     # Open the processed video file in binary mode and read its content
     with open(processed_video_path, 'rb') as f:
@@ -246,19 +246,17 @@ st.write("Below, you can toggle the button to start the real-time detection usin
 
 
 # Create a button to start the webcam
-on_camera = st.toggle('Activate camera')
+real_time_detection = st.checkbox("Start Real-Time Detection")
+
+video_placeholder = st.empty()
+run_detection = True  
+
+while run_detection: 
+    with video_placeholder.container():
+        if real_time_detection:
+            real_time_object_detection(st.session_state.yolo_model, video_placeholder)
+        else:
+            video_placeholder.empty()  
+            run_detection = False
 
 
-if on_camera:
-    real_time_detection = st.checkbox("Start Real-Time Detection")
-
-    video_placeholder = st.empty()
-    run_detection = True  
-
-    while run_detection: 
-        with video_placeholder.container():
-            if real_time_detection:
-                real_time_object_detection(st.session_state.yolo_model, video_placeholder)
-            else:
-                video_placeholder.empty()  
-                run_detection = False 
