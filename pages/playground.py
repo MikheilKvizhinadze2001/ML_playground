@@ -22,7 +22,7 @@ from sklearn.model_selection import cross_val_score
 
 
 # Function to plot the correlation matrix
-@st.cache_data
+
 def plot_correlation_matrix(df):
     st.write("Now, let us visualize the correlation matrix:")
     corr = df.corr().round(2)
@@ -46,7 +46,7 @@ def plot_correlation_matrix(df):
     st.plotly_chart(fig)
 
 # Function to train the model
-@st.cache_data
+
 def train_model(model, X_train, X_test, y_train):
     # Fit the model
     model.fit(X_train, y_train)
@@ -57,7 +57,7 @@ def train_model(model, X_train, X_test, y_train):
     return y_pred
 
 # Function to scale the data
-@st.cache_data
+
 def scale_data(X_train, X_test):
     scaler = StandardScaler()
     X_train_scaled = scaler.fit_transform(X_train)
@@ -65,7 +65,7 @@ def scale_data(X_train, X_test):
     return X_train_scaled, X_test_scaled
 
 
-@st.cache_data
+
 def evaluate_model(y_pred, y_test):
         st.success("Model trained successfully! Here are the predictions and the actual values:", icon="✅")
         results = pd.DataFrame({'Actual': y_test, 'Predicted': y_pred})
@@ -94,7 +94,6 @@ def evaluate_model(y_pred, y_test):
         st.write(report_df)
 
 
-@st.cache_data
 def evaluate_regression_model(y_pred, y_test):
     st.success("Model trained successfully! Here are the predictions and the actual values:", icon="✅")
     results = pd.DataFrame({'Actual': y_test, 'Predicted': y_pred})
@@ -116,7 +115,7 @@ def evaluate_regression_model(y_pred, y_test):
 
 
 # Function to split the data into training and testing sets
-@st.cache_data
+
 def split_data(df, train_size):
 
 
@@ -128,7 +127,6 @@ def split_data(df, train_size):
     return X_train, X_test, y_train, y_test
 
 # Function to perform cross-validation on regression tasks
-@st.cache_data
 def cross_validation_regression(model, df, cv):
     """
     Perform cross-validation on a given model.
@@ -157,7 +155,7 @@ def cross_validation_regression(model, df, cv):
     return None
 
 # Function to perform cross-validation on classification tasks
-@st.cache_data
+@st.experimental_fragment
 def cross_validation(model, df, cv):
     """
     Perform cross-validation on a given model.
@@ -320,16 +318,6 @@ else:
 
 
 
-_ = """
-st.image('photos/tree.png',caption='Decision Tree Classifier')
-st.image('photos/forest.png',caption='Random Forest Classifier')
-st.image('photos/regression.png',caption='Logistic Regression Classifier')
-st.image('photos/forest_regress.png',caption='Random Forest Regressor')
-st.image('photos/log_regress.jpeg',caption='Logistic Regression (classifier)')
-"""
-
-
-
 # K Nearest Neighbors Classifier
 if model == 'K Nearest Neighbors Classifier':
     
@@ -362,12 +350,18 @@ if model == 'K Nearest Neighbors Classifier':
         st.write("So, how many folds should we use for cross-validation?")
         cv_num = st.text_input('Enter the number of folds [2, inf), integers only.', value=5)
   
-        # Evaluate the model
-        if st.button("Press to start cross-validation"):
-            scores = cross_validation(st.session_state.model, df_without_target_col, cv_num)
-            if st.button("Shall we clear the data, and start fresh?"):
-                st.session_state.model = None
-                st.rerun()
+        # Perform cross-validation
+        @st.experimental_fragment
+        def ask_cross_validation():
+            if st.button("Press to start cross-validation"):
+                cross_validation(st.session_state.model, df_without_target_col, cv_num)
+        
+        ask_cross_validation()
+
+        # Clear the data and start fresh
+        if st.button("Shall we clear the data, and start fresh?"):
+            st.rerun()
+
     except Exception as e:
         st.write(f"An error occurred: {e}")
 
@@ -411,12 +405,17 @@ elif model == 'Decision Tree Classifier':
         st.write("So, how many folds should we use for cross-validation?")
         cv_num = st.text_input('Enter the number of folds [2, inf), integers only.', value=5)
 
-         # Evaluate the model
-        if st.button("Press to start cross-validation"):
-            scores = cross_validation(st.session_state.model, df_without_target_col, cv_num)
-            if st.button("Shall we clear the data, and start fresh?"):
-                st.session_state.model = None
-                st.rerun()
+        # Perform cross-validation
+        @st.experimental_fragment
+        def ask_cross_validation():
+            if st.button("Press to start cross-validation"):
+                cross_validation(st.session_state.model, df_without_target_col, cv_num)
+        
+        ask_cross_validation()
+
+        # Clear the data and start fresh
+        if st.button("Shall we clear the data, and start fresh?"):
+            st.rerun()
 
     except Exception as e:
         st.write(f"An error occurred: {e}")
@@ -460,12 +459,18 @@ elif model == 'Random Forest Classifier':
         st.write("So, how many folds should we use for cross-validation?")
         cv_num = st.text_input('Enter the number of folds [2, inf), integers only.', value=5)
 
-         # Evaluate the model
-        if st.button("Press to start cross-validation"):
-            scores = cross_validation(st.session_state.model, df_without_target_col, cv_num)
-            if st.button("Shall we clear the data, and start fresh?"):
-                st.session_state.model = None
-                st.rerun()
+
+        # Perform cross-validation
+        @st.experimental_fragment
+        def ask_cross_validation():
+            if st.button("Press to start cross-validation"):
+                cross_validation(st.session_state.model, df_without_target_col, cv_num)
+        
+        ask_cross_validation()
+
+        # Clear the data and start fresh
+        if st.button("Shall we clear the data, and start fresh?"):
+            st.rerun()
 
     except Exception as e:
         st.write(f"An error occurred: {e}")
@@ -511,12 +516,19 @@ elif model == 'Logistic Regression Classifier':
         st.write("So, how many folds should we use for cross-validation?")
         cv_num = st.text_input('Enter the number of folds [2, inf), integers only.', value=5)
 
-         # Evaluate the model
-        if st.button("Press to start cross-validation"):
-            scores = cross_validation(st.session_state.model, df_without_target_col, cv_num)
-            if st.button("Shall we clear the data, and start fresh?"):
-                st.session_state.model = None
-                st.rerun()
+        # Perform cross-validation
+        @st.experimental_fragment
+        def ask_cross_validation():
+            if st.button("Press to start cross-validation"):
+                cross_validation(st.session_state.model, df_without_target_col, cv_num)
+        
+        ask_cross_validation()
+        if st.button("Shall we clear the data, and start fresh?"):
+            st.rerun()
+
+
+        if st.button("Shall we clear the data, and start fresh?"):
+            st.rerun()
 
     except Exception as e:
         st.write(f"An error occurred: {e}")
@@ -555,15 +567,19 @@ elif model == 'Random Forest Regressor':
         
         # Cross-validation
         st.write("Now let us perform cross-validation on the model, which is a technique used to evaluate the performance of a machine learning model. It involves splitting the dataset into k equal parts (or folds), training the model on k-1 folds and testing it on the remaining fold. This process is repeated k times, with each fold serving as the test set exactly once. The final performance metric is the average of the performance metrics obtained from each fold.")
+        st.write("It will display mean absolute error, which is the average of the absolute differences between the predicted and actual values.")
         st.write("So, how many folds should we use for cross-validation?")
         cv_num = st.text_input('Enter the number of folds [2, inf), integers only.', value=5)
 
-        # Evaluate the model
-        if st.button("Press to start cross-validation"):
-            scores = cross_validation_regression(st.session_state.model, df, cv_num)
-            if st.button("Shall we clear the data, and start fresh?"):
-                st.session_state.model = None
-                st.rerun()
+        # Perform cross-validation
+        @st.experimental_fragment
+        def ask_cross_validation():
+            if st.button("Press to start cross-validation"):
+                cross_validation_regression(st.session_state.model, df, cv_num)
+        
+        ask_cross_validation()
+        if st.button("Shall we clear the data, and start fresh?"):
+            st.rerun()
 
     except Exception as e:
         st.write(f"An error occurred: {e}")
@@ -599,17 +615,18 @@ elif model == 'LinearRegression':
         # Cross-validation
         st.write("Now let us perform cross-validation on the model, which is a technique used to evaluate the performance of a machine learning model. It involves splitting the dataset into k equal parts (or folds), training the model on k-1 folds and testing it on the remaining fold. This process is repeated k times, with each fold serving as the test set exactly once. The final performance metric is the average of the performance metrics obtained from each fold.")
         st.write("So, how many folds should we use for cross-validation?")
+
         cv_num = st.text_input('Enter the number of folds [2, inf), integers only.', value=5)
 
         # Evaluate the model
-        if st.button("Press to start cross-validation"):
-            scores = cross_validation_regression(st.session_state.model, df, cv_num)
-            if st.button("Shall we clear the data, and start fresh?"):
-                st.session_state.model = None
-                st.rerun()
+        @st.experimental_fragment
+        def ask_cross_validation():
+            if st.button("Press to start cross-validation"):
+                cross_validation_regression(st.session_state.model, df, cv_num)
+        
+        ask_cross_validation()
 
         if st.button("Shall we clear the data, and start fresh?"):
-            st.session_state.model = None
             st.rerun()
     except Exception as e:
         st.write(f"An error occurred: {e}")
