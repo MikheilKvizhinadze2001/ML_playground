@@ -176,6 +176,7 @@ if uploaded_file is not None and st.button("Process Image"):
                 st.success("Bam!")
                 st.write(f"Here are {model_choice}'s predictions")
                 st.write("Decimal numbers in the annotations represent the confidence score of the model. The higher the score, the more confident the model is in its prediction.")
+                st.write("But wait, how does object detection work and what is YOLO? 🤔")
                 return img
 
             image = np.array(image)  # Convert PIL Image to numpy array
@@ -183,7 +184,7 @@ if uploaded_file is not None and st.button("Process Image"):
 
             # Display the output image
             st.image(result_img, use_column_width=True)
-            st.write("But wait, how does object detection work and what is YOLO? 🤔")
+            
 
     
 
