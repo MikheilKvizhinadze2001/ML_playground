@@ -17,6 +17,8 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error, make_scorer
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import cross_val_score
+import time
+
 
 # Helper functions for the app
 
@@ -304,9 +306,8 @@ if (train_size == 100):
     st.error("Whoops! No data left for testing 😬. Please select a smaller train size.")
 
 # Save the train size in session state
-if ("train_size" not in st.session_state):
-    st.session_state.train_size = train_size
 
+st.session_state.train_size = train_size
 st.write(f"Great! We will use {train_size}% of the dataset, {int(len(df)*(train_size/100))} for training the model and the remaining {100 - train_size}%, {len(df) - int(len(df)*(train_size/100))} for testing the model.")
 
 if chosen_dataset == 'Diabetes 🩸':
@@ -330,14 +331,13 @@ if model == 'K Nearest Neighbors Classifier':
         st.session_state.model = KNeighborsClassifier(n_neighbors=n_neighbers)
     st.write("Should we normalize the data before training the model? (Scale numerical data to a common range, usually between 0 and 1, to prevent differences in scales from affecting analysis or modeling results.)")
     normalize = st.checkbox('Normalize data')
-
     X_train, X_test, y_train, y_test = split_data(df_without_target_col, train_size)
     st.write(f"train size {len(X_train)} ")
     st.write(f"test size {len(X_test)}")
     try:
         if (normalize):    
             X_train_scaled, X_test_scaled = scale_data(X_train, X_test)
-            
+            st.success("Data normalized successfully! 😊")
             y_pred = train_model(st.session_state.model, X_train_scaled, X_test_scaled, y_train)
         else:
             y_pred = train_model(st.session_state.model, X_train, X_test, y_train)
@@ -360,6 +360,8 @@ if model == 'K Nearest Neighbors Classifier':
 
         # Clear the data and start fresh
         if st.button("Shall we clear the data, and start fresh?"):
+            st.write("Data cleared successfully! 😊")
+            time.sleep(1)
             st.rerun()
 
     except Exception as e:
@@ -372,24 +374,63 @@ elif model == 'Decision Tree Classifier':
                 A decision tree is a flowchart-like structure in which each internal node represents a feature (or attribute), each branch represents a decision rule, and each leaf node represents the outcome. The topmost node in a decision tree is known as the root node. It learns to partition the data into subsets based on the values of the features. The goal is to create a model that predicts the value of a target variable by learning simple decision rules inferred from the data features. Decision trees are easy to understand and interpret, making them a popular choice for classification tasks.
                     
              """)
-    st.image('photos/tree.png',caption='Decision Tree Classifier')
+    st.image('photos/tree.png', caption='Decision Tree Classifier')
     st.write("So, how many levels should the decision tree have?")
     st.info("""
-            💡 The maximum depth of the tree. If None, then nodes are expanded until all leaves are pure or until all leaves contain less than min_samples_split samples.
+            The maximum depth of the tree. If None, then nodes are expanded until all leaves are pure or until all leaves contain less than min_samples_split samples.
             So, risk of overfitting increases with the depth of the tree.
+            **Default: None**
             """)
-    max_depth = st.number_input('Select the maximum depth of the tree:', min_value=1, value=5)
+    max_depth = st.number_input('Select the maximum depth of the tree:', min_value=1, value=None)
+
+    st.write("What's the minimum number of samples required to split an internal node?")
+    st.info("**Default: 2**")
+    min_samples_split = st.number_input('min_samples_split:', min_value=2, value=2)
+
+    st.write("What's the minimum number of samples required to be at a leaf node?")
+    st.info("**Default: 1**")
+    min_samples_leaf = st.number_input('min_samples_leaf:', min_value=1, value=1)
+
+    st.write("What's the maximum number of features to consider when looking for the best split?")
+    st.info("**Default: 'None'**")
+    max_features = st.selectbox('max_features:', [None, 'log2', "sqrt"])
+
+    st.write("What's the criterion to measure the quality of a split?")
+    st.info("**Default: 'gini'**")
+    criterion = st.selectbox('criterion:', ['gini', 'entropy', 'log_loss'])
+
+    st.write("What's the strategy to choose the split at each node?")
+    st.info("**Default: 'best'**")
+    splitter = st.selectbox('splitter:', ['best', 'random'])
+
+    st.write("What's the minimum impurity decrease required to split an internal node?")
+    st.info("**Default: 0.0**")
+    min_impurity_decrease = st.number_input('min_impurity_decrease:', min_value=0.0, value=0.0)
+
+    st.write("How should we weight the classes during training?")
+    st.info("**Default: 'balanced'**")
+    class_weight = st.selectbox('class_weight:', [None, 'balanced'])
+
+   
+    st.session_state.model = DecisionTreeClassifier(
+            max_depth=max_depth,
+            min_samples_split=min_samples_split,
+            min_samples_leaf=min_samples_leaf,
+            max_features=max_features,
+            criterion=criterion,
+            splitter=splitter,
+            min_impurity_decrease=min_impurity_decrease,
+            class_weight=class_weight
+    )
     
-    if ('model' not in st.session_state):
-        st.session_state.model = DecisionTreeClassifier(max_depth=max_depth)
-    st.write("Should we normalize the data before training the model? (Scale numerical data to a common range, usually between 0 and 1, to prevent differences in scales from affecting analysis or modeling results.)")
+    st.write("Should we normalize the data before training the model?")
     normalize = st.checkbox('Normalize data')
     X_train, X_test, y_train, y_test = split_data(df_without_target_col, train_size)
 
     try:
         if (normalize):    
             X_train_scaled, X_test_scaled = scale_data(X_train, X_test)
-            
+            st.success("Data normalized successfully! 😊")
             y_pred = train_model(st.session_state.model, X_train_scaled, X_test_scaled, y_train)
         else:
             y_pred = train_model(st.session_state.model, X_train, X_test, y_train)
@@ -415,6 +456,8 @@ elif model == 'Decision Tree Classifier':
 
         # Clear the data and start fresh
         if st.button("Shall we clear the data, and start fresh?"):
+            st.write("Data cleared successfully! 😊")
+            time.sleep(1)
             st.rerun()
 
     except Exception as e:
@@ -427,23 +470,51 @@ elif model == 'Random Forest Classifier':
     st.write("""
                 A random forest is a meta estimator that fits a number of decision tree classifiers on various sub-samples of the dataset and uses averaging to improve the predictive accuracy and control over-fitting. The sub-sample size is controlled with the `max_samples` parameter if `bootstrap=True` (default), otherwise the whole dataset is used to build each tree.
              """)
-    st.image('photos/forest.png',caption='Random Forest Classifier')
+    st.image('photos/forest.png', caption='Random Forest Classifier')
     st.write("How many estimators (trees) should the random forest have?")
     st.info("""
-            💡 The number of trees in the forest. Increasing the number of trees can lead to improved accuracy, but it can also increase the computational complexity and may lead to overfitting.
+            The number of trees in the forest. Increasing the number of trees can lead to improved accuracy, but it can also increase the computational complexity and may lead to overfitting.
+            **Default: 100**
             """)
     n_estimators = st.number_input('Select the number of estimators:', min_value=1, value=100)
+
+    st.write("What's the maximum depth of each tree?")
+    st.info("**Default: None (no limit)**")
+    max_depth = st.number_input('Select the maximum depth of each tree:', min_value=1, value=None)
+
+    st.write("What's the minimum number of samples required to split an internal node?")
+    st.info("**Default: 2**")
+    min_samples_split = st.number_input('min_samples_split:', min_value=2, value=2)
+
+    st.write("What's the minimum number of samples required to be at a leaf node?")
+    st.info("**Default: 1**")
+    min_samples_leaf = st.number_input('min_samples_leaf:', min_value=1, value=1)
+
+    st.write("What's the maximum number of features to consider when looking for the best split?")
+    st.info("**Default: 'sqrt'**")
+    max_features = st.selectbox('max_features:', ['sqrt', 'log2', None])
+
+    st.write("How should we weight the classes during training?")
+    st.info("**Default: 'None'**")
+    class_weight = st.selectbox('class_weight:', [None, 'balanced', 'balanced_subsample'])
+
     
-    if ('model' not in st.session_state):
-        st.session_state.model = RandomForestClassifier(n_estimators=n_estimators)
-        st.write("Should we normalize the data before training the model? (Scale numerical data to a common range, usually between 0 and 1, to prevent differences in scales from affecting analysis or modeling results.)")
+    st.session_state.model = RandomForestClassifier(
+        n_estimators=n_estimators,
+        max_depth=max_depth,
+        min_samples_split=min_samples_split,
+        min_samples_leaf=min_samples_leaf,
+        max_features=max_features,
+        class_weight=class_weight)
+        
+    st.write("Should we normalize the data before training the model? (Scale numerical data to a common range, usually between 0 and 1, to prevent differences in scales from affecting analysis or modeling results.)")
     normalize = st.checkbox('Normalize data')
     X_train, X_test, y_train, y_test = split_data(df_without_target_col, train_size)
 
     try:
         if (normalize):    
             X_train_scaled, X_test_scaled = scale_data(X_train, X_test)
-            
+            st.success("Data normalized successfully! 😊")
             y_pred = train_model(st.session_state.model, X_train_scaled, X_test_scaled, y_train)
         else:
             y_pred = train_model(st.session_state.model, X_train, X_test, y_train)
@@ -470,6 +541,8 @@ elif model == 'Random Forest Classifier':
 
         # Clear the data and start fresh
         if st.button("Shall we clear the data, and start fresh?"):
+            st.write("Data cleared successfully! 😊")
+            time.sleep(1)
             st.rerun()
 
     except Exception as e:
@@ -492,7 +565,6 @@ elif model == 'Logistic Regression Classifier':
     
     if ('model' not in st.session_state):
         st.session_state.model = LogisticRegression(C=C)
-
     st.write("Should we normalize the data before training the model? (Scale numerical data to a common range, usually between 0 and 1, to prevent differences in scales from affecting analysis or modeling results.)")
     normalize = st.checkbox('Normalize data')
     X_train, X_test, y_train, y_test = split_data(df_without_target_col, train_size)
@@ -500,7 +572,7 @@ elif model == 'Logistic Regression Classifier':
     try:
         if (normalize):    
             X_train_scaled, X_test_scaled = scale_data(X_train, X_test)
-            
+            st.success("Data normalized successfully! 😊")
             y_pred = train_model(st.session_state.model, X_train_scaled, X_test_scaled, y_train)
         else:
             y_pred = train_model(st.session_state.model, X_train, X_test, y_train)
@@ -524,10 +596,8 @@ elif model == 'Logistic Regression Classifier':
         
         ask_cross_validation()
         if st.button("Shall we clear the data, and start fresh?"):
-            st.rerun()
-
-
-        if st.button("Shall we clear the data, and start fresh?"):
+            st.write("Data cleared successfully! 😊")
+            time.sleep(1)
             st.rerun()
 
     except Exception as e:
@@ -555,7 +625,7 @@ elif model == 'Random Forest Regressor':
     try:
         if (normalize):    
             X_train_scaled, X_test_scaled = scale_data(X_train, X_test)
-            
+            st.success("Data normalized successfully! 😊")
             y_pred = train_model(st.session_state.model, X_train_scaled, X_test_scaled, y_train)
         else:
             y_pred = train_model(st.session_state.model, X_train, X_test, y_train)
@@ -579,6 +649,8 @@ elif model == 'Random Forest Regressor':
         
         ask_cross_validation()
         if st.button("Shall we clear the data, and start fresh?"):
+            st.write("Data cleared successfully! 😊")
+            time.sleep(1)
             st.rerun()
 
     except Exception as e:
@@ -602,7 +674,7 @@ elif model == 'LinearRegression':
     try:
         if (normalize):    
             X_train_scaled, X_test_scaled = scale_data(X_train, X_test)
-            
+            st.success("Data normalized successfully! 😊")
             y_pred = train_model(st.session_state.model, X_train_scaled, X_test_scaled, y_train)
         else:
             y_pred = train_model(st.session_state.model, X_train, X_test, y_train)
@@ -619,6 +691,7 @@ elif model == 'LinearRegression':
         cv_num = st.text_input('Enter the number of folds [2, inf), integers only.', value=5)
 
         # Evaluate the model
+        # Fragmenting because the function is defined later and to avoid re-running the whole script
         @st.experimental_fragment
         def ask_cross_validation():
             if st.button("Press to start cross-validation"):
@@ -627,6 +700,8 @@ elif model == 'LinearRegression':
         ask_cross_validation()
 
         if st.button("Shall we clear the data, and start fresh?"):
+            st.write("Data cleared successfully! 😊")
+            time.sleep(1)
             st.rerun()
     except Exception as e:
         st.write(f"An error occurred: {e}")
