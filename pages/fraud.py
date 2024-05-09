@@ -12,25 +12,24 @@ from sklearn.metrics import classification_report
 from sklearn.model_selection import RandomizedSearchCV
 from scipy.stats import randint
 import joblib
-
+import shap
 
 
 # Helper functions
-
 @st.cache_data
 def train_model_with_random_search(X_train, y_train):
     # Define the parameter distribution
     param_dist = {
         'n_estimators': randint(100, 500),
         'max_depth': randint(1, 50),
-        'learning_rate': [0.1, 0.01, 0.001],
+        'learning_rate': [0.3,0.1, 0.2],
         'subsample': [0.5, 0.7, 1.0],
-        'colsample_bytree': [0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
-        'colsample_bylevel': [0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
+        'colsample_bytree': [0.4, 0.6, 0.8, 0.9, 1.0],
+        'colsample_bylevel': [0.4, 0.6, 0.8, 0.9, 1.0],
         'min_child_weight': [0.5, 1.0, 3.0, 5.0, 7.0, 10.0],
         'gamma': [0, 0.25, 0.5, 1.0],
-        'reg_lambda': [0.1, 1.0, 5.0, 10.0, 50.0, 100.0],
-        'scale_pos_weight': [1, 1.5, 2, 3, 3.5, 4]
+        'reg_lambda': [0,0.1, 1.0, 5.0, 10.0, 50.0],
+        'scale_pos_weight': [1, 1.5, 2, 3]
     }
 
     # Initialize the model
@@ -186,6 +185,24 @@ def get_classification_report(y_test, y_pred):
 
     return report_df
 
+
+@st.cache_data
+def compute_shap_values(model, X):
+    # Initialize the explainer
+    explainer = shap.Explainer(model)
+
+    # Compute SHAP values
+    shap_values = explainer.shap_values(X)
+
+    return shap_values
+
+@st.cache_data
+def plot_shap_values(shap_values, X):
+    # Initialize the plot
+    shap.summary_plot(shap_values, X, plot_type="bar")
+
+
+
 # Title
 st.title("Credit Card Fraud Detection")
 
@@ -305,53 +322,73 @@ st.write("Number of fraud cases before balancing: {}".format(sum(y_train == 1)))
 st.write("Number of no fraud cases in the balanced training data: {}".format(sum(y_train_res == 0)))
 
 
+# we use fragments in conjunction with buttons, because we want to control when the content is displayed
+# and we don't want to display it immediately when the page is loaded, nor we want our webpage to reload when the button is clicked
 
 st.write("Do you want to know how model performs on the  training data? Let's find out!")
-if st.button("Show me the results"):
-    # Balanced Data
-    model = train_model(X_train_res, y_train_res)
-    # Make predictions on the test set
-    y_pred = model.predict(X_train)
-    # Display the classification report
-    st.subheader('Classification Report of train data (using Balanced Data)')
-    st.write(get_classification_report(y_train, y_pred))
-    st.write("As we see, model overfits the data when using default hyperparameters. We can further improve the model's performance by tuning the hyperparameters of the XGBoost classifier.")
+
+@st.experimental_fragment
+def ask_train_performance():
+    if st.button("Press to show performance on train data"):
+        # Balanced Data
+        model = train_model(X_train_res, y_train_res)
+        # Make predictions on the test set
+        y_pred = model.predict(X_train)
+        # Display the classification report
+        st.subheader('Classification Report of train data (using Balanced Data)')
+        st.write(get_classification_report(y_train, y_pred))
+        st.write("As we see, model overfits the data when using default hyperparameters. We can further improve the model's performance by tuning the hyperparameters of the XGBoost classifier.")
+
+
+ask_train_performance()
+
 
 
 # Call the function to train the model
 # Non-Balanced Data
 st.write("Press the button below to train the model using the non-balanced data.")
-if st.button("Start training and evaluation on the test set"):
-    model = train_model(X_train, y_train)
-    # Make predictions on the test set
-    y_pred = model.predict(X_test)
-    # Display the classification report of non-balanced data
-    st.subheader('Classification Report (Non-Balanced Data)')
-    st.write(get_classification_report(y_test, y_pred))
+@st.experimental_fragment
+def ask_test_performance_unbalanced():
+    if st.button("Start training and evaluation on the test set (non-balanced data)"):
+        model = train_model(X_train, y_train)
+        # Make predictions on the test set
+        y_pred = model.predict(X_test)
+        # Display the classification report of non-balanced data
+        st.subheader('Classification Report (Non-Balanced Data)')
+        st.write(get_classification_report(y_test, y_pred))
 
 
-
+ask_test_performance_unbalanced()
 
 
 # Balanced Data
-st.write("Press the button below to train the model using the non-balanced data.")
-if st.button("Start training and evaluation (test-set)"):
-    model = train_model(X_train_res, y_train_res)
-    # Make predictions on the test set
-    y_pred = model.predict(X_test)
-    # Display the classification report
-    st.subheader('Classification Report (Balanced Data)')
-    st.write(get_classification_report(y_test, y_pred))
+st.write("Press the button below to train the model using the balanced data.")
+@st.experimental_fragment
+def ask_test_performance_balanced():
+    if st.button("Start training and evaluation (test-set, balanced data)"):
+        model = train_model(X_train_res, y_train_res)
+        # Make predictions on the test set
+        y_pred = model.predict(X_test)
+        # Display the classification report
+        st.subheader('Classification Report (Balanced Data)')
+        st.write(get_classification_report(y_test, y_pred))
+
+# call the function
+ask_test_performance_balanced()
 
 
 st.header("Improving Performance")
 st.write("Our recall score after balancing the data is 0.85, which is a significant improvement over the non-balanced data. However, we can further improve the model's performance by tuning the hyperparameters of the XGBoost classifier.")
 st.write("We can use techniques like Grid Search or Random Search to find the best hyperparameters for the model. Let's proceed with hyperparameter tuning to improve the model's performance.")
 
-if st.button("Start Hyperparameter Tuning"):
-    # Balanced Data
-    model = train_model_with_random_search(X_train_res, y_train_res)
-    evaluate_model(model, X_test, y_test)
-    # Save the model as a pickle file
-    joblib.dump(model, 'best_model.pkl')
+@st.experimental_fragment
+def ask_hyperparameter_tuning():
+    if st.button("Start Hyperparameter Tuning and save the best model"):
+        # Balanced Data
+        model = train_model_with_random_search(X_train_res, y_train_res)
+        evaluate_model(model, X_test, y_test)
+        # Save the best model
+        joblib.dump(model, 'best_model.pkl')
+
+ask_hyperparameter_tuning()
 
