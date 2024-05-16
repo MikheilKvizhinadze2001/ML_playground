@@ -4,60 +4,72 @@ import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
 import plotly.figure_factory as ff
-from sklearn.model_selection import train_test_split
 from xgboost import XGBClassifier
 from imblearn.over_sampling import ADASYN
 from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import classification_report
-from sklearn.model_selection import RandomizedSearchCV
+from sklearn.model_selection import train_test_split, RandomizedSearchCV, StratifiedKFold
 from scipy.stats import randint
 import joblib
 import shap
+import matplotlib.pyplot as plt
+from streamlit_shap import st_shap
 
 
-# Helper functions
+
+
+# Function to train the model with hyperparameter tuning using Random Search
 @st.cache_data
 def train_model_with_random_search(X_train, y_train):
-    # Define the parameter distribution
     param_dist = {
-        'n_estimators': randint(100, 500),
-        'max_depth': randint(1, 50),
-        'learning_rate': [0.3,0.1, 0.2],
-        'subsample': [0.5, 0.7, 1.0],
-        'colsample_bytree': [0.4, 0.6, 0.8, 0.9, 1.0],
-        'colsample_bylevel': [0.4, 0.6, 0.8, 0.9, 1.0],
-        'min_child_weight': [0.5, 1.0, 3.0, 5.0, 7.0, 10.0],
-        'gamma': [0, 0.25, 0.5, 1.0],
-        'reg_lambda': [0,0.1, 1.0, 5.0, 10.0, 50.0],
-        'scale_pos_weight': [1, 1.5, 2, 3]
+        'n_estimators': randint(100, 300),
+        'max_depth': randint(3, 10),
+        'learning_rate': [0.01, 0.05, 0.1],
+        'subsample': [0.7, 0.8, 0.9, 1.0],
+        'colsample_bytree': [0.7, 0.8, 0.9, 1.0],
+        'min_child_weight': [1, 3, 5],
+        'gamma': [0, 0.1, 0.2],
+        'reg_lambda': [0.1, 1.0, 10.0],
+        'scale_pos_weight': [1]  # Set to 1 because the data is already balanced
     }
 
-    # Initialize the model
-    xgb = XGBClassifier(use_label_encoder=False)
+    xgb = XGBClassifier(use_label_encoder=False, scale_pos = 1)
+    skf = StratifiedKFold(n_splits=3, shuffle=True, random_state=42)
 
-    # Initialize the random search
-    random_search = RandomizedSearchCV(estimator=xgb, param_distributions=param_dist, n_iter=100, cv=3, n_jobs=-1)
+    random_search = RandomizedSearchCV(
+        estimator=xgb, 
+        param_distributions=param_dist, 
+        n_iter=50, 
+        cv=skf, 
+        n_jobs=-1, 
+        scoring='f1'  # Using f1 score as the scoring metric
+    )
 
-    # Fit the random search to the data
     random_search.fit(X_train, y_train)
 
-    # Get the best parameters
     best_params = random_search.best_params_
-
     st.write(f"Best parameters: {best_params}")
 
     return random_search.best_estimator_
 
+
+# Function to evaluate the ensemble model
 @st.cache_data
-def evaluate_model(model, X_test, y_test):
+def evaluate_model(_model, X_test, y_test):
     # Make predictions on the test set
-    y_pred = model.predict(X_test)
+    y_pred = _model.predict(X_test)
 
     # Display the classification report
     st.subheader('Classification Report')
     st.write(get_classification_report(y_test, y_pred))
 
 
+# Function to compute SHAP valuess
+@st.cache_data
+def compute_shap_values(_model, X):
+    explainer = shap.Explainer(_model)
+    shap_values = explainer.shap_values(X)
+    return shap_values
 
 
 
@@ -186,15 +198,6 @@ def get_classification_report(y_test, y_pred):
     return report_df
 
 
-@st.cache_data
-def compute_shap_values(model, X):
-    # Initialize the explainer
-    explainer = shap.Explainer(model)
-
-    # Compute SHAP values
-    shap_values = explainer.shap_values(X)
-
-    return shap_values
 
 @st.cache_data
 def plot_shap_values(shap_values, X):
@@ -296,8 +299,8 @@ st.write("Number of fraud cases in the **training set:** {}".format(sum(y_train 
 st.write("And this is the class distribution in the **testing set:**")
 st.write("Number of fraud cases in the testing set: {}".format(sum(y_test == 1)))
 st.write("So, did the percentage of fraud cases remain the same in the training and testing sets?")
-st.write("Percentage of fraud cases in the training set: {:.2f}%".format(100 * sum(y_train == 1) / len(y_train)))
-st.write("Percentage of fraud cases in the testing set: {:.2f}%".format(100 * sum(y_test == 1) / len(y_test)))
+st.write("Percentage of fraud cases in the training set: (100 * sum(y_train == 1) / len(y_train) = {:.2f}%".format(100 * sum(y_train == 1) / len(y_train)))
+st.write("Percentage of fraud cases in the testing set: (100 * sum(y_test == 1) / len(y_test)) =  {:.2f}%".format(100 * sum(y_test == 1) / len(y_test)))
 
 
 
@@ -325,70 +328,75 @@ st.write("Number of no fraud cases in the balanced training data: {}".format(sum
 # we use fragments in conjunction with buttons, because we want to control when the content is displayed
 # and we don't want to display it immediately when the page is loaded, nor we want our webpage to reload when the button is clicked
 
-st.write("Do you want to know how model performs on the  training data? Let's find out!")
+st.write("We will first train the model using the balanced data and then evaluate its performance on the training set.")
+# Balanced Data
+model = train_model(X_train_res, y_train_res)
+# Make predictions on the test set
+y_pred = model.predict(X_train)
+# Display the classification report
+st.subheader('Classification Report of train data (using Balanced Data)')
+st.write(get_classification_report(y_train, y_pred))
+st.write("As we see, model overfits the data when using default hyperparameters. We can further improve the model's performance by tuning the hyperparameters of the XGBoost classifier.")
 
-@st.experimental_fragment
-def ask_train_performance():
-    if st.button("Press to show performance on train data"):
-        # Balanced Data
-        model = train_model(X_train_res, y_train_res)
-        # Make predictions on the test set
-        y_pred = model.predict(X_train)
-        # Display the classification report
-        st.subheader('Classification Report of train data (using Balanced Data)')
-        st.write(get_classification_report(y_train, y_pred))
-        st.write("As we see, model overfits the data when using default hyperparameters. We can further improve the model's performance by tuning the hyperparameters of the XGBoost classifier.")
-
-
-ask_train_performance()
 
 
 
 # Call the function to train the model
 # Non-Balanced Data
-st.write("Press the button below to train the model using the non-balanced data.")
-@st.experimental_fragment
-def ask_test_performance_unbalanced():
-    if st.button("Start training and evaluation on the test set (non-balanced data)"):
-        model = train_model(X_train, y_train)
-        # Make predictions on the test set
-        y_pred = model.predict(X_test)
-        # Display the classification report of non-balanced data
-        st.subheader('Classification Report (Non-Balanced Data)')
-        st.write(get_classification_report(y_test, y_pred))
+st.write("Let us see how the model performs on the test set using the non-balanced data.")
+model = train_model(X_train, y_train)
+# Make predictions on the test set
+y_pred = model.predict(X_test)
+# Display the classification report of non-balanced data
+st.subheader('Classification Report (Non-Balanced Data)')
+st.write(get_classification_report(y_test, y_pred))
 
-
-ask_test_performance_unbalanced()
 
 
 # Balanced Data
-st.write("Press the button below to train the model using the balanced data.")
-@st.experimental_fragment
-def ask_test_performance_balanced():
-    if st.button("Start training and evaluation (test-set, balanced data)"):
-        model = train_model(X_train_res, y_train_res)
-        # Make predictions on the test set
-        y_pred = model.predict(X_test)
-        # Display the classification report
-        st.subheader('Classification Report (Balanced Data)')
-        st.write(get_classification_report(y_test, y_pred))
+st.write("Let us see how the model performs on the test set using the balanced data.")
+model = train_model(X_train_res, y_train_res)
+# Make predictions on the test set
+y_pred = model.predict(X_test)
+# Display the classification report
+st.subheader('Classification Report (Balanced Data)')
+st.write(get_classification_report(y_test, y_pred))
 
-# call the function
-ask_test_performance_balanced()
+
 
 
 st.header("Improving Performance")
 st.write("Our recall score after balancing the data is 0.85, which is a significant improvement over the non-balanced data. However, we can further improve the model's performance by tuning the hyperparameters of the XGBoost classifier.")
 st.write("We can use techniques like Grid Search or Random Search to find the best hyperparameters for the model. Let's proceed with hyperparameter tuning to improve the model's performance.")
+st.write("To save time, I will just display the best hyperparameters and save the best model. You can further improve the model by tuning the hyperparameters and training the model again.")
 
-@st.experimental_fragment
-def ask_hyperparameter_tuning():
-    if st.button("Start Hyperparameter Tuning and save the best model"):
-        # Balanced Data
-        model = train_model_with_random_search(X_train_res, y_train_res)
-        evaluate_model(model, X_test, y_test)
-        # Save the best model
-        joblib.dump(model, 'best_model.pkl')
 
-ask_hyperparameter_tuning()
+# Snippet to train model with hyperparameter tuning
+# Uncomment the code below to train the model with hyperparameter tuning
+# best_model = train_model_with_random_search(X_train_res, y_train_res)
 
+
+
+# load best model
+best_model = joblib.load('best_model.pkl')
+# Functions to evaluate the model and plot SHAP values
+
+st.write("Model performance on the test set using the best hyperparameters:")
+
+evaluate_model(best_model, X_test, y_test)
+
+st.write("As we see, the model's performance (recall) has improved significantly after hyperparameter tuning. The recall score is now 0.87, which means that the model can detect 87% of fraud cases in the dataset, compared to 0.8469, which was the recall score before hyperparameter tuning. This improvement in performance is crucial for detecting fraud cases accurately.")
+st.write("However, the model's precision has decreased slightly after hyperparameter tuning. This trade-off between precision and recall is common in imbalanced datasets, where the model tries to maximize recall at the expense of precision. Depending on the business requirements, we can adjust the model's threshold to optimize precision or recall.")
+st.write("It should be noted that recall score of 87% is not perfect, especially for tasks like fraud detection and there is still room for improvement. We can further improve the model's performance by using more advanced techniques like anomaly detection algorithms or ensemble methods. However, for the purpose of this project, the XGBoost classifier with hyperparameter tuning has provided a good balance between precision and recall.")
+
+
+# SHAP Values 
+st.header("Model Interpretation using SHAP")
+st.write("Now that we have trained the model and evaluated its performance, let's use SHAP to interpret the model and understand the importance of each feature in detecting fraud cases.")
+st.write("SHAP (SHapley Additive exPlanations) is a powerful technique that explains the output of any machine learning model by calculating the contribution of each feature to the prediction.")
+
+
+shap_values = compute_shap_values(best_model, X_test)
+st_shap(shap.summary_plot(shap_values, X_test))
+
+st.write("Thank you for exploring the app! I hope you enjoyed the journey through data preprocessing, model building, evaluation, and interpretation. Feel free to reach out if you have any questions or feedback. Have a great day!")
