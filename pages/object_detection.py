@@ -135,7 +135,6 @@ if uploaded_file is not None and st.button("Process Image"):
                 st.write(f"Here are {model_choice}'s predictions 👇")
                 st.write('Decimal numbers in the annotations represent the confidence score of the model. The higher the score, the more confident the model is in its prediction.')
                 st.image(image, use_column_width=True)
-                st.write("But wait, how does the object detection work and what is DETR? 🤔")
         else:
             st.session_state.yolo_model = YOLO("yolov8n.pt")
 
@@ -176,7 +175,6 @@ if uploaded_file is not None and st.button("Process Image"):
                 st.success("Bam!")
                 st.write(f"Here are {model_choice}'s predictions")
                 st.write("Decimal numbers in the annotations represent the confidence score of the model. The higher the score, the more confident the model is in its prediction.")
-                st.write("But wait, how does object detection work and what is YOLO? 🤔")
                 return img
 
             image = np.array(image)  # Convert PIL Image to numpy array
@@ -194,11 +192,6 @@ if uploaded_file is not None and st.button("Process Image"):
         
 
 
-_to_be_continued = '''
-                this is a placeholder for the continuation of the object detection explanation
-                    '''
-
-
 
 st.title("Object Tracking in Videos")
 st.write("""
@@ -207,6 +200,7 @@ st.write("""
         video where the tracked object is highlighted in each frame. It’s a fun and useful way to analyze videos! 🎥😄
         """)
 st.write("To see how well the model can track objects in a video, you can upload a video below. Upload a video and the model will track objects in it and put bounding boxes around them, bam 😁")
+st.warning("However, please note that the video processing might take some time depending on the video length and complexity. So, please upload videos under 1 minute for a smoother experience. Thank you! 🙏")
 
 
 
