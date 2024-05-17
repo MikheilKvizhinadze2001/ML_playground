@@ -157,7 +157,6 @@ def cross_validation_regression(model, df, cv):
     return None
 
 # Function to perform cross-validation on classification tasks
-@st.experimental_fragment
 def cross_validation(model, df, cv):
     """
     Perform cross-validation on a given model.
@@ -346,12 +345,12 @@ if model == 'K Nearest Neighbors Classifier':
         if st.button("Shall we evaluate the model?"):
             evaluate_model(y_pred, y_test)
         # Cross-validation
-        st.write("Now let us perform cross-validation on the model, which is a technique used to evaluate the performance of a machine learning model. It involves splitting the dataset into k equal parts (or folds), training the model on k-1 folds and testing it on the remaining fold. This process is repeated k times, with each fold serving as the test set exactly once. The final performance metric is the average of the performance metrics obtained from each fold.")
+        st.write("Now let us perform cross-validation on the model, which is a technique used to evaluate the performance of a machine learning model. It involves splitting the dataset into k equal parts (or folds), training the model on k-1 folds and testing it on the remaining fold. This process is repeated k times, with each fold serving as the test set exactly once. The final performance metric is the average of the performance metrics obtained from each fold. The proportion of samples used for training and testing can vary depending on the number of folds. In general, the more folds you use, the smaller the test set will be, and the larger the training set will be.")
         st.write("So, how many folds should we use for cross-validation?")
         cv_num = st.text_input('Enter the number of folds [2, inf), integers only.', value=5)
   
         # Perform cross-validation
-        @st.experimental_fragment
+        #@st.experimental_fragment
         def ask_cross_validation():
             if st.button("Press to start cross-validation"):
                 cross_validation(st.session_state.model, df_without_target_col, cv_num)
@@ -442,12 +441,12 @@ elif model == 'Decision Tree Classifier':
 
         
         # Cross-validation
-        st.write("Now let us perform cross-validation on the model, which is a technique used to evaluate the performance of a machine learning model. It involves splitting the dataset into k equal parts (or folds), training the model on k-1 folds and testing it on the remaining fold. This process is repeated k times, with each fold serving as the test set exactly once. The final performance metric is the average of the performance metrics obtained from each fold.")
+        st.write("Now let us perform cross-validation on the model, which is a technique used to evaluate the performance of a machine learning model. It involves splitting the dataset into k equal parts (or folds), training the model on k-1 folds and testing it on the remaining fold. This process is repeated k times, with each fold serving as the test set exactly once. The final performance metric is the average of the performance metrics obtained from each fold. The proportion of samples used for training and testing can vary depending on the number of folds. In general, the more folds you use, the smaller the test set will be, and the larger the training set will be.")
         st.write("So, how many folds should we use for cross-validation?")
         cv_num = st.text_input('Enter the number of folds [2, inf), integers only.', value=5)
 
         # Perform cross-validation
-        @st.experimental_fragment
+       # @st.experimental_fragment
         def ask_cross_validation():
             if st.button("Press to start cross-validation"):
                 cross_validation(st.session_state.model, df_without_target_col, cv_num)
@@ -526,13 +525,13 @@ elif model == 'Random Forest Classifier':
 
         
         # Cross-validation
-        st.write("Now let us perform cross-validation on the model, which is a technique used to evaluate the performance of a machine learning model. It involves splitting the dataset into k equal parts (or folds), training the model on k-1 folds and testing it on the remaining fold. This process is repeated k times, with each fold serving as the test set exactly once. The final performance metric is the average of the performance metrics obtained from each fold.")
+        st.write("Now let us perform cross-validation on the model, which is a technique used to evaluate the performance of a machine learning model. It involves splitting the dataset into k equal parts (or folds), training the model on k-1 folds and testing it on the remaining fold. This process is repeated k times, with each fold serving as the test set exactly once. The final performance metric is the average of the performance metrics obtained from each fold. The proportion of samples used for training and testing can vary depending on the number of folds. In general, the more folds you use, the smaller the test set will be, and the larger the training set will be.")
         st.write("So, how many folds should we use for cross-validation?")
         cv_num = st.text_input('Enter the number of folds [2, inf), integers only.', value=5)
 
 
         # Perform cross-validation
-        @st.experimental_fragment
+        #@st.experimental_fragment
         def ask_cross_validation():
             if st.button("Press to start cross-validation"):
                 cross_validation(st.session_state.model, df_without_target_col, cv_num)
@@ -584,12 +583,12 @@ elif model == 'Logistic Regression Classifier':
 
         
         # Cross-validation
-        st.write("Now let us perform cross-validation on the model, which is a technique used to evaluate the performance of a machine learning model. It involves splitting the dataset into k equal parts (or folds), training the model on k-1 folds and testing it on the remaining fold. This process is repeated k times, with each fold serving as the test set exactly once. The final performance metric is the average of the performance metrics obtained from each fold.")
+        st.write("Now let us perform cross-validation on the model, which is a technique used to evaluate the performance of a machine learning model. It involves splitting the dataset into k equal parts (or folds), training the model on k-1 folds and testing it on the remaining fold. This process is repeated k times, with each fold serving as the test set exactly once. The final performance metric is the average of the performance metrics obtained from each fold. The proportion of samples used for training and testing can vary depending on the number of folds. In general, the more folds you use, the smaller the test set will be, and the larger the training set will be.")
         st.write("So, how many folds should we use for cross-validation?")
         cv_num = st.text_input('Enter the number of folds [2, inf), integers only.', value=5)
 
         # Perform cross-validation
-        @st.experimental_fragment
+        #@st.experimental_fragment
         def ask_cross_validation():
             if st.button("Press to start cross-validation"):
                 cross_validation(st.session_state.model, df_without_target_col, cv_num)
@@ -636,13 +635,13 @@ elif model == 'Random Forest Regressor':
 
         
         # Cross-validation
-        st.write("Now let us perform cross-validation on the model, which is a technique used to evaluate the performance of a machine learning model. It involves splitting the dataset into k equal parts (or folds), training the model on k-1 folds and testing it on the remaining fold. This process is repeated k times, with each fold serving as the test set exactly once. The final performance metric is the average of the performance metrics obtained from each fold.")
+        st.write("Now let us perform cross-validation on the model, which is a technique used to evaluate the performance of a machine learning model. It involves splitting the dataset into k equal parts (or folds), training the model on k-1 folds and testing it on the remaining fold. This process is repeated k times, with each fold serving as the test set exactly once. The final performance metric is the average of the performance metrics obtained from each fold. The proportion of samples used for training and testing can vary depending on the number of folds. In general, the more folds you use, the smaller the test set will be, and the larger the training set will be.")
         st.write("It will display mean absolute error, which is the average of the absolute differences between the predicted and actual values.")
         st.write("So, how many folds should we use for cross-validation?")
         cv_num = st.text_input('Enter the number of folds [2, inf), integers only.', value=5)
 
         # Perform cross-validation
-        @st.experimental_fragment
+        #@st.experimental_fragment
         def ask_cross_validation():
             if st.button("Press to start cross-validation"):
                 cross_validation_regression(st.session_state.model, df, cv_num)
@@ -685,14 +684,14 @@ elif model == 'LinearRegression':
 
         
         # Cross-validation
-        st.write("Now let us perform cross-validation on the model, which is a technique used to evaluate the performance of a machine learning model. It involves splitting the dataset into k equal parts (or folds), training the model on k-1 folds and testing it on the remaining fold. This process is repeated k times, with each fold serving as the test set exactly once. The final performance metric is the average of the performance metrics obtained from each fold.")
+        st.write("Now let us perform cross-validation on the model, which is a technique used to evaluate the performance of a machine learning model. It involves splitting the dataset into k equal parts (or folds), training the model on k-1 folds and testing it on the remaining fold. This process is repeated k times, with each fold serving as the test set exactly once. The final performance metric is the average of the performance metrics obtained from each fold. The proportion of samples used for training and testing can vary depending on the number of folds. In general, the more folds you use, the smaller the test set will be, and the larger the training set will be.")
         st.write("So, how many folds should we use for cross-validation?")
 
         cv_num = st.text_input('Enter the number of folds [2, inf), integers only.', value=5)
 
         # Evaluate the model
         # Fragmenting because the function is defined later and to avoid re-running the whole script
-        @st.experimental_fragment
+        #@st.experimental_fragment
         def ask_cross_validation():
             if st.button("Press to start cross-validation"):
                 cross_validation_regression(st.session_state.model, df, cv_num)
@@ -705,3 +704,12 @@ elif model == 'LinearRegression':
             st.rerun()
     except Exception as e:
         st.write(f"An error occurred: {e}")
+
+
+
+st.write("""You may notice that all of our models performed very well.
+         This is because the datasets we used are small and simple, and the models are powerful and flexible.
+            In practice, you may encounter datasets that are much larger and more complex, and models that are less powerful and flexible.
+         So, it is important to experiment with different models, hyperparameters, and datasets to find the best combination for your specific problem.
+         Thank you for using the Machine Learning playground! 😊
+         """)
