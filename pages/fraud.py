@@ -16,7 +16,8 @@ from streamlit_shap import st_shap
 from scipy.stats import randint, uniform
 from skopt import BayesSearchCV
 from skopt.space import Real, Integer
-
+import os
+import gdown
 
 
 @st.cache_data
@@ -99,8 +100,20 @@ def balance_data_adasyn(X_train, y_train):
     return X_train_res, y_train_res
 
 @st.cache_data
-def load_data():
-    return pd.read_csv('fraud_data/creditcard.csv')
+def load_data(url):
+    # Create a temporary file
+    temp_file = 'temp.csv'
+
+    # Download the file from Google Drive
+    gdown.download(url, temp_file, quiet=False)
+
+    # Load the data into a DataFrame
+    df = pd.read_csv(temp_file)
+
+    # Delete the temporary file
+    os.remove(temp_file)
+
+    return df
 
 @st.cache_data
 @st.experimental_fragment
@@ -265,8 +278,8 @@ Feel free to explore the app and don't hesitate to reach out if you have any que
 """)
 
 
-
-df = load_data()
+url = 'https://drive.google.com/uc?export=download&id=1TynhlIbI1BI2Ug2bB7mSooYCpiXEN3Vk'
+df = load_data(url)
 st.write("Now let us inspect the dataset a bit 👇")
 
 st.write("Summary of the dataset:")
@@ -437,3 +450,4 @@ shap_values = compute_shap_values(best_model, X_test)
 st_shap(shap.summary_plot(shap_values, X_test))
 
 st.write("Thank you for exploring the app! I hope you enjoyed the journey through data preprocessing, model building, evaluation, and interpretation. Feel free to reach out if you have any questions or feedback. Have a great day!")
+
