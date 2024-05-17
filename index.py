@@ -5,3 +5,6 @@ st.title('Welcome to the ML app')
 st.write('This app is a demo of the machine learning, computer vision and deep learning capabilities using Streamlit library.')
 st.write('The app is divided into three sections: Object Detection, Playground and fraud detection case study. Without further ado, check you all the sections and see the magic of machine learning in action.😊 ')
 
+st.write('My contact information:')
+st.write('Email: mikheilkvizhinadze@gmail.com')
+st.write('LinkedIn: linkedin.com/in/mikheil-kvizhinadze-49638a200')
