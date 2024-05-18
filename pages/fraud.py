@@ -424,7 +424,7 @@ st.write("To save time, I will just display the best hyperparameters and save th
 # Save the model
 #oblib.dump(model, 'best_model.pkl')
 # Load best model
-best_model = joblib.load('best_model.pkl')
+best_model = joblib.load('best_xgb_for_fraud.pkl')
 # Evaluate the model
 #st.write("Model performance on the test set using the best hyperparameters:")
 #evaluate_model(model, X_test, y_test)
