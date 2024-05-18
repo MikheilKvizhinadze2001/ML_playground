@@ -43,6 +43,9 @@ https://github.com/MikheilKvizhinadze2001/ML_playground/assets/85734592/942310ab
 
 ### Playground demo
 
+This is a playground which will allow you to experiment with various machine learning algorithms and datasets. It allows you to select a dataset, visualize and investigate it, tweak parameters (and hyperparameters) and see the results in real-time. This is a great way to learn how machine learning algorithms work and how they can be applied to different datasets.
+
+
 
 https://github.com/MikheilKvizhinadze2001/ML_playground/assets/85734592/ba646a80-84ab-4074-a1f6-fc42f4ea6cc9
 
@@ -50,7 +53,13 @@ https://github.com/MikheilKvizhinadze2001/ML_playground/assets/85734592/ba646a80
 
 
 ### Video annotation tool demo
+The tool offers the following functionality:
 
+- Video Upload: Users can upload a video file of their choice.
+- Annotation: The uploaded video is annotated with relevant information or markings.
+- Output: An annotated version of the video is generated and made available for download.
+
+  
 ## Video before:
 
 
