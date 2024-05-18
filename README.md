@@ -5,6 +5,19 @@
 This part contains demos of my streamlit website.
 
 ### Credit card fraud detection demo
+**Dataset**
+The dataset used is the Credit Card Fraud Detection dataset from Kaggle. It contains transactions made by European cardholders in September 2013. With 492 frauds out of 284,807 transactions, it presents a highly imbalanced class distribution. Features include transformed numerical variables and 'Time' and 'Amount' as non-transformed variables.
+
+**Methodology**
+The project follows these steps:
+
+- Data Preprocessing: Cleaning and preprocessing the data.
+- Exploratory Data Analysis (EDA): Analyzing variable distributions and relationships.
+- Model Building: Training a suitable machine learning model.
+- Model Evaluation: Assessing model performance using appropriate metrics.
+- Model Interpretation: Utilizing techniques like SHAP for feature importance.
+
+
 https://github.com/MikheilKvizhinadze2001/ML_playground/assets/85734592/66ddbca1-15bf-4d71-a391-be1ab9ac9f40
 
 
