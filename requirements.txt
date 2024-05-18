@@ -18,3 +18,4 @@ transformers
 Pillow
 seaborn
 gdown
+scopt
