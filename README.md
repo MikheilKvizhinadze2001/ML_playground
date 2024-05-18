@@ -40,7 +40,7 @@ Directory called 'tutorials' contains several jupyter notebook files, feel free 
 
 This part contains various machine learning projects, each demonstrating different techniques and algorithms on distinct datasets. The projects include ensemble learning, K-Means clustering, rice image classification using CNNs, and cat vs dog image classification.
 
-1. Ensemble Learning on MNIST Dataset
+**1. Ensemble Learning on MNIST Dataset**
 Goal: Classify handwritten digits using ensemble learning techniques.
 
 Steps
@@ -57,7 +57,7 @@ The blender was less effective due to various factors including individual predi
 Conclusion
 Ensemble methods enhance model performance, with the best approach varying by dataset and model specifics.
 
-2. K-Means Clustering on Customer Dataset
+**2. K-Means Clustering on Customer Dataset**
 Goal: Implement K-Means clustering to segment customers.
 
 Dataset: Customer Segmentation Dataset from Kaggle.
@@ -68,7 +68,7 @@ Scratch Implementation: Manually implement K-Means, including centroid initializ
 Link to Dataset: 
 https://www.kaggle.com/datasets/yasserh/customer-segmentation-dataset
 
-3. Rice Image Classification using CNNs
+**3. Rice Image Classification using CNNs**
 Goal: Classify rice images into five types using a Convolutional Neural Network (CNN).
 
 Dataset: 75,000 rice images, with 15,000 images per class.
@@ -81,7 +81,7 @@ Link to Dataset:
 https://www.kaggle.com/datasets/muratkokludataset/rice-image-dataset
 
 
-4. Cat vs Dog Image Classification
+**4. Cat vs Dog Image Classification**
 Goal: Classify images of cats and dogs using different models.
 
 Steps
@@ -91,7 +91,7 @@ VGG16: Pre-trained CNN model, best performance, but underfits the data. Potentia
 Link to Dataset: 
 https://www.kaggle.com/datasets/karakaggle/kaggle-cat-vs-dog-dataset
 
-Conclusion
+### Conclusion
 These projects collectively showcase various machine learning techniques applied to different datasets. They highlight the strengths and limitations of each method, emphasizing the importance of model selection and tuning based on specific tasks and datasets.
 
-If you have any questions, contact me mikheilkvizhinadze@gmail.com
+If you have any questions, contact me at mikheilkvizhinadze@gmail.com
