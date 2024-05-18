@@ -21,7 +21,7 @@ https://github.com/MikheilKvizhinadze2001/ML_playground/assets/85734592/66ddbca1
 
 
 
-### Object detection and computer vision demo
+### Real-time object detection demo
 
 
 https://github.com/MikheilKvizhinadze2001/ML_playground/assets/85734592/942310ab-529a-4dc0-a82c-53cefebb7dfc
