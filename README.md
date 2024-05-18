@@ -10,7 +10,7 @@ https://github.com/MikheilKvizhinadze2001/ML_playground/assets/85734592/66ddbca1
 
 
 
-**shap values:**
+**shap values of xgboost model used in this project**
 
 
 
