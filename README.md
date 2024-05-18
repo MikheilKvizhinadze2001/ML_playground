@@ -35,6 +35,25 @@ https://github.com/MikheilKvizhinadze2001/ML_playground/assets/85734592/ba646a80
 
 
 
+
+### Video annotation tool demo
+
+## Video before:
+
+
+
+https://github.com/MikheilKvizhinadze2001/ML_playground/assets/85734592/22f0c983-0dd2-46e1-80b2-73c48cfc7dcb
+
+
+
+## Video after:
+
+
+
+https://github.com/MikheilKvizhinadze2001/ML_playground/assets/85734592/316e86e7-5077-41a1-8db5-1c41d116119e
+
+
+
 ## Part 2, tutorials
 Directory called 'tutorials' contains several jupyter notebook files, feel free to check them out for more info, thanks!
 
