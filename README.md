@@ -55,7 +55,7 @@ https://github.com/MikheilKvizhinadze2001/ML_playground/assets/85734592/316e86e7
 
 
 ## Part 2, tutorials
-Directory called 'tutorials' contains several jupyter notebook files, feel free to check them out for more info, thanks!
+Directory called 'notebooks' contains several jupyter notebook files, feel free to check them out for more info, thanks!
 
 This part contains various machine learning projects, each demonstrating different techniques and algorithms on distinct datasets. The projects include ensemble learning, K-Means clustering, rice image classification using CNNs, and cat vs dog image classification.
 
