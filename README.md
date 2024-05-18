@@ -7,8 +7,18 @@ This part contains demos of my streamlit website.
 ### Credit card fraud detection demo
 https://github.com/MikheilKvizhinadze2001/ML_playground/assets/85734592/66ddbca1-15bf-4d71-a391-be1ab9ac9f40
 
-shap values:
+
+
+
+**shap values:**
+
+
+
 ![shap_values](https://github.com/MikheilKvizhinadze2001/ML_playground/assets/85734592/097980bc-fe6e-4118-b6f5-7aa84ee06322)
+
+
+
+
 
 
 ### Object detection and computer vision demo
