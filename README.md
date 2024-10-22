@@ -135,4 +135,7 @@ https://www.kaggle.com/datasets/karakaggle/kaggle-cat-vs-dog-dataset
 ### Conclusion
 These projects collectively showcase various machine learning techniques applied to different datasets. They highlight the strengths and limitations of each method, emphasizing the importance of model selection and tuning based on specific tasks and datasets.
 
+### Update
+As of 10/22/2024, the app is inactive, but of course you can always reproduce the results :)
+
 If you have any questions, contact me at mikheilkvizhinadze@gmail.com
