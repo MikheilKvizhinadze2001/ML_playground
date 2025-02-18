@@ -4,6 +4,26 @@
 ## Part 1, machine learning playground and object detection tools in streamlit!
 This part contains demos of my streamlit website.
 
+
+### To Run the streamlit app on your local machine (Part 1 of this repo), do the following:
+
+clone the repo using:
+
+git clone https://github.com/MikheilKvizhinadze2001/ML_playground.git
+
+Next, make sure you are in the same directory as 'index.py', and install the dependences using:
+
+pip install -r requirements.txt
+
+Finally, run the streamlit app using:
+
+streamlit run index.py
+
+
+P.S. You can ignore the 'notebooks' directory, it does not influence streamlit in any way :)
+
+
+
 ### Credit card fraud detection demo
 **Dataset**
 The dataset used is the Credit Card Fraud Detection dataset from Kaggle. It contains transactions made by European cardholders in September 2013. With 492 frauds out of 284,807 transactions, it presents a highly imbalanced class distribution. Features include transformed numerical variables and 'Time' and 'Amount' as non-transformed variables.
